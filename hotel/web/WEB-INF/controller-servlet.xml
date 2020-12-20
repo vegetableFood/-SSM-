@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd ">
+<!-- 	SpringMVC使用注解 -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+<!-- 	扫包 -->
+	<context:component-scan base-package="controller"></context:component-scan>
+	<context:component-scan base-package="exceptionhandler"></context:component-scan>
+
+<!-- 	ViewResolver -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+<!-- 		View -->
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"></property>
+		<property name="prefix" value="/WEB-INF/jsp/"></property>
+		<property name="suffix" value=".jsp"></property>
+
+	</bean>
+<!-- 	ViewController -->
+	<mvc:view-controller path="/register-1" view-name="register-1"/>
+	<mvc:view-controller path="/register-2" view-name="register-2"/>
+	<mvc:view-controller path="/login" view-name="login"/>
+	<mvc:view-controller path="/createSubscriptionDtl-1" view-name="createSubscriptionDtl-1"/>
+	<mvc:view-controller path="/createSubscriptionDtl-2" view-name="createSubscriptionDtl-2"/>
+	<mvc:view-controller path="/createSubscriptionDtl-3" view-name="createSubscriptionDtl-3"/>
+	<mvc:view-controller path="/editMember" view-name="editMember"/>
+	<mvc:view-controller path="/editPassword" view-name="editPassword"/>
+	<mvc:view-controller path="/editSubscription" view-name="editSubscription"/>
+	<mvc:view-controller path="/foot" view-name="foot"/>
+	<mvc:view-controller path="/header" view-name="header"/>
+	<mvc:view-controller path="/historySubscription" view-name="historySubscription"/>
+	<mvc:view-controller path="/hotel" view-name="hotel"/>
+	<mvc:view-controller path="/left" view-name="left"/>
+
+	<mvc:view-controller path="/memberCenter" view-name="memberCenter"/>
+	<mvc:view-controller path="/mySubscription" view-name="mySubscription"/>
+	<mvc:view-controller path="/newSubscription" view-name="newSubscription"/>
+
+	<mvc:view-controller path="/roomPrice" view-name="roomPrice"/>
+	<mvc:view-controller path="/subscriptionDetail" view-name="subscriptionDetail"/>
+	<mvc:view-controller path="/managers/managerLogin" view-name="manager/managerLogin"/>
+	<mvc:view-controller path="/manager/subscriptionQuery" view-name="manager/subscriptionQuery"/>
+	<mvc:view-controller path="/manager/subscriptionList" view-name="manager/subscriptionList"/>
+	<mvc:view-controller path="/manager/subscriptionDetail" view-name="manager/subscriptionDetail"/>
+	<mvc:view-controller path="/manager/managerHeader" view-name="manager/managerHeader"/>
+
+<!-- 	访问静态资源 -->
+	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+	<mvc:resources location="/images/" mapping="/images/**"></mvc:resources>
+	<mvc:resources location="/style/" mapping="/style/**"></mvc:resources>
+
+<!--过滤器-->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/manager/**"/>
+			<bean class="Interceptor.CheckLoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+</beans>

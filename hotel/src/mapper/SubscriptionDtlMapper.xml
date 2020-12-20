@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.SubscriptionDtlDao">
+    <resultMap id="subscriptionDtl" type="Subscription_dtl">
+        <id column="id" property="id"></id>
+        <result column="rid" property="rid"></result>
+        <result column="sid" property="sid"></result>
+        <result column="sdate" property="sdate" jdbcType="TIMESTAMP"></result>
+        <result column="edate" property="edate" jdbcType="TIMESTAMP"></result>
+        <result column="residetype" property="residetype"></result>
+        <result column="price" property="price"></result>
+        <collection property="rooms" ofType="Room">
+            <id column="roomid" property="id" ></id>
+            <result column="no" property="no"></result>
+        </collection>
+    </resultMap>
+<!--    查询用户的预定房间-->
+    <select id="selectOrderRoom" parameterType="String" resultMap="subscriptionDtl">
+        SELECT sd.*,r.no,r.id as roomid
+        FROM subscription_dtl sd
+            LEFT JOIN room r ON sd.rid = r.id
+        WHERE   sid = #{id}
+    </select>
+<!--    删除用户的预定房间-->
+    <delete id="deleteOrderRoom" parameterType="String">
+        delete
+        from subscription_dtl
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+<!--    查询用户的预定房间是否删除成功-->
+    <select id="sDeleteOrderRoom" parameterType="String" resultType="int">
+        select count(*)
+        from subscription_dtl
+        where id = #{id}
+    </select>
+<!--    删除reside表中的数据-->
+    <delete id="rDeleteOrderRoom" parameterType="String">
+        delete
+        from reside
+        where dtlid = #{id}
+    </delete>
+<!--    查询reside表用户的预定房间是否删除成功-->
+    <select id="selectRidesIsExist" parameterType="String" resultType="int">
+        select count(*)
+        from reside
+        where dtlid = #{id}
+    </select>
+</mapper>

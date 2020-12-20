@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.MemberDao">
+	<resultMap  id="memberMapper" type="Member">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="pwd" property="pwd"/>
+		<result column="name" property="name"/>
+		<result column="email" property="email"/>
+		<result column="phone" property="phone"/>
+		<result column="regtime" property="regtime" jdbcType="TIMESTAMP"/>
+		<result column="roomprice" property="roomprice"/>
+	</resultMap>
+<!--	根据用户名查找用户-->
+	<select id="selectByUsername" parameterType="string" resultMap="memberMapper">
+		select *
+		from member
+		where username=#{username}
+	</select>
+<!--	注册-->
+	<insert id="insert" parameterType="Member">
+		insert into member
+			(username,pwd,name,email,phone,regtime)
+		values
+			(#{username},#{pwd},#{name},#{email},#{phone},#{regtime,jdbcType=TIMESTAMP})
+	</insert>
+<!--	登录-->
+	<select id="selectUsernameAndPassWord" parameterType="Member" resultMap="memberMapper">
+		select *
+		from member
+		where username=#{username} and pwd=#{pwd}
+	</select>
+<!--	修改密码-->
+	<update id="updatePassWard" parameterType="Member">
+		update member
+		set pwd = #{pwd}
+		where id = #{id}
+	</update>
+	<select id="selectUpdatePassWardIs" parameterType="int" resultType="Member">
+		select *
+		from member
+		where id = #{id}
+	</select>
+<!--	修改信息-->
+	<update id="updateUserMessage" parameterType="Member" >
+		update member
+		set name = #{name},phone = #{phone},email = #{email}
+		where id = #{id}
+	</update>
+</mapper>

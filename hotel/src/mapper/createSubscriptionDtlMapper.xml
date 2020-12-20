@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.createSubscriptionDtlDao">
+    <resultMap id="room" type="Room">
+        <id property="id" column="id"></id>
+        <result property="cid" column="cid"></result>
+        <result property="no" column="no"></result>
+        <result property="status" column="status"></result>
+    </resultMap>
+    <!-- 单个床位-->
+    <select id="selectOneBedNo" parameterType="vo.CreatSubDtlVo" resultMap="room">
+        select
+            r.*
+        from
+            room r
+        where
+            r.cid = #{rootType}
+            and r.status="o"
+            and r.id not in(
+                select
+                    m.roomid
+                from
+                    (
+                    select
+                        sum(dtl.residetype) cnt,
+                        dtl.rid roomid ,
+                        rsd.residedate
+                    from
+                        reside rsd
+                    inner join
+                        subscription_dtl dtl
+                            on rsd.dtlid = dtl.id
+                    where
+                        rsd.residedate between #{startDate} and #{endDate}
+                    group by
+                        dtl.rid,
+                        rsd.residedate
+                    having
+                        cnt >=2) m )
+    </select>
+<!--    整个房间-->
+    <select id="selectAllRoomNo" parameterType="vo.CreatSubDtlVo" resultMap="room">
+        select
+        r.*
+        from
+            room r
+        where
+            r.cid=#{rootType}
+            and r.status="o"
+            and r.id not in  (
+                              select
+                                   dtl.rid
+                              from
+                                   reside res,
+                                   subscription_dtl dtl
+                              where
+                                   res.dtlid=dtl.id
+                                   and res.residedate between #{startDate} and #{endDate})
+
+    </select>
+<!--    预定房间-->
+    <insert id="insertAllRoomNo" parameterType="Subscription_dtl"  keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        insert into subscription_dtl
+                        (rid,sid,sdate,edate,residetype,price)
+                    values (#{rid},#{sid},#{sdate},#{edate},#{residetype},#{price})
+
+    </insert>
+    <insert id="insertReside" parameterType="Reside"  keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+         insert into reside
+                        (dtlid,residedate,roomername)
+                    values (#{dtlid},#{residedate},#{roomername})
+    </insert>
+</mapper>

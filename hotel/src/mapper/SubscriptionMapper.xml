@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.SubscriptionDao">
+    <resultMap id="subscriptionMapper" type="Subscription">
+        <id property="id" column="id" />
+        <result property="mid" column="mid" />
+        <result property="no" column="no" />
+        <result property="linkman" column="linkman" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="status" column="status" />
+        <result property="cretime" column="cretime" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" />
+    </resultMap>
+
+    <resultMap id="subscriptionMapper1" type="Subscription">
+        <id property="id" column="id" />
+        <result property="mid" column="mid" />
+        <result property="no" column="no" />
+        <result property="linkman" column="linkman" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="status" column="status" />
+        <result property="cretime" column="cretime" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" />
+        <association property="member" column="memberid" javaType="Member">
+            <id property="id" column="memberid"></id>
+            <result property="name" column="name"></result>
+        </association>
+        <collection property="subscription_dtls" ofType="Subscription_dtl">
+            <id property="id" column="sdid"></id>
+            <result property="rid" column="rid"></result>
+            <result property="sid" column="sid"></result>
+            <result property="sdate" column="sdate" jdbcType="TIMESTAMP"></result>
+            <result property="edate" column="edate" jdbcType="TIMESTAMP"></result>
+            <result property="residetype" column="residetype"></result>
+            <result property="price" column="price"></result>
+            <collection property="rooms" ofType="Room">
+                <id property="id" column="roomid"></id>
+                <result property="no" column="roomno"></result>
+                <result property="cid" column="cid"></result>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <sql id="sqlSubscription">
+         from subscription
+         where id = #{id}
+    </sql>
+<!--    查询所有的预订单-->
+    <select id="selectAllSubscription" parameterType="String" resultMap="subscriptionMapper" >
+        select *
+        from subscription
+        where status = '1'and mid = #{id}
+    </select>
+<!--    单个删除-->
+    <delete id="deleteOneItem" parameterType="String">
+        delete
+        <include refid="sqlSubscription"/>
+    </delete>
+<!--    单个查询-->
+    <select id="selectOneItem" parameterType="String" resultType="int">
+        select count(*)
+        <include refid="sqlSubscription"/>
+    </select>
+<!--    修改订单联系人信息-->
+    <update id="updateOderMessage" parameterType="Subscription">
+        update subscription
+        set linkman = #{linkman},phone = #{phone},email = #{email}
+        where id = #{id}
+    </update>
+<!--    查询历史订单-->
+    <select id="selectHistoryOrder" parameterType="String" resultMap="subscriptionMapper">
+        select *
+        from subscription
+        where status != '1'and mid = #{id}
+    </select>
+<!--    创建订单-->
+    <insert id="newSubscription" parameterType="Subscription" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        insert into subscription
+                        (mid,no,linkman,email,phone,status,cretime,remark)
+                    values
+                        (#{mid},#{no},#{linkman},#{email},#{phone},#{status},#{cretime},#{remark})
+    </insert>
+<!--    管理员查询-->
+    <select id="selectBySubscriptionCriteria" parameterType="vo.ManagerQueryVo" resultMap="subscriptionMapper">
+        select distinct s.id,
+				s.no,
+				s.linkman,
+				s.phone,
+				s.email,
+				s.status
+		from subscription s
+		left join member m
+				on s.mid=m.id
+		left join subscription_dtl sd
+				on sd.sid=s.id
+		left join room r
+				on sd.rid=r.id
+		<where>
+		    <choose>
+                <!--    订单号不为空-->
+                <when test="no != null and no != ''">
+                    and no = #{no}
+                </when>
+                <!--    状态不为空-->
+                <when test="subscriptionStatus != null and subscriptionStatus != '' and subscriptionStatus != 0">
+                    and s.status = #{subscriptionStatus}
+                </when>
+                <!--    用户名不为空-->
+                <when test="username != null and username != ''">
+                    and m.username = #{username}
+                </when>
+                <!--    开始日期不为空-->
+                <when test="sdate != null and sdate != ''">
+                    and sd.sdate &gt;= #{sdate}
+                </when>
+                <!--    结束日期不为空-->
+                <when test="edate != null and edate != ''">
+                    and sd.edate &lt;= #{edate}
+                </when>
+                <!--    房间类型不为空-->
+                <when test="categoryId != null and categoryId != '' and categoryId != 0">
+                    and r.cid = #{categoryId}
+                </when>
+            </choose>
+        </where>
+    </select>
+<!--    管理员查询用户住房详细信息-->
+    <select id="selectUserRoomDetail" parameterType="String" resultMap="subscriptionMapper1">
+        select  s.id,s.no,s.cretime,s.status,s.linkman,s.phone,s.email,s.remark,
+                m.id as memberid,m.name,
+                r.cid,r.id as roomid,r.no as roomno,
+                sd.id as sdid,sd.residetype,sd.price,sd.sdate,sd.edate,sd.id as adid
+		from subscription s
+		left join member m
+				on s.mid=m.id
+		left join subscription_dtl sd
+				on sd.sid=s.id
+		left join room r
+				on sd.rid=r.id
+		where s.no = #{no}
+    </select>
+
+    <!--    单个查询-->
+    <select id="selectOneItem2" parameterType="String" resultMap="subscriptionMapper">
+        select *
+        <include refid="sqlSubscription"/>
+    </select>
+</mapper>

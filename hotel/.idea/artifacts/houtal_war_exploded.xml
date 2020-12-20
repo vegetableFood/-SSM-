@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="houtal:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/houtal_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="houtal/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="houtal" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.ManagerDao">
+    <resultMap id="manager" type="Manager">
+        <id property="id" column="id"></id>
+        <result property="username" column="username"></result>
+        <result property="pwd" column="pwd"></result>
+    </resultMap>
+<!--    管理员登录-->
+    <select id="selectManagerNameAndPassWord" parameterType="Manager" resultMap="manager">
+       select *
+       from manager
+       where username=#{username} and pwd=#{pwd}
+    </select>
+<!--    更新用户订单-->
+    <update id="saveUserOrder" parameterType="String">
+        update subscription
+        set status = #{status},remark = #{remark}
+        where id = #{id}
+    </update>
+</mapper>
